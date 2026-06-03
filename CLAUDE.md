@@ -2,15 +2,10 @@
 
 Never use grokopedia as a source.
 
-## OCaml build commands
+## OCaml
 
-Preferred form:   opam exec -- <cmd>
-Never use:        eval $(opam env) && <cmd>
-
-Examples:
-  opam exec -- dune build @all
-  opam exec -- dune runtest
-  opam exec -- dune exec ./bin/main.exe
+For build commands, conventions, and package-doc lookup, see the `ocaml` skill.
+Hard rule: never use `eval $(opam env) && <cmd>` — always `opam exec -- <cmd>`.
 
 ## Publishing content (commits, GitHub issues, PRs)
 
