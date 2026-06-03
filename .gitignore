@@ -1,0 +1,11 @@
+# Allowlist: ignore everything at the top level, then re-include the
+# files and directories we want tracked. New cruft (sessions/, cache/,
+# projects/, history.jsonl, etc.) is ignored automatically.
+
+/*
+
+!.gitignore
+!CLAUDE.md
+!LICENSE
+!README.md
+!skills/
