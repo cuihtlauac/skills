@@ -7,7 +7,7 @@ description: Run a project that organizes work across sessions via a `backlog.md
 
 A working discipline for projects that use a `backlog.md` (ordered pending work, current task first) and a `changelog.md` (completed work, most recent at top) at the repository root. The pattern exists because Claude Code conversations have finite context: long sessions either get summarized or hit a hard limit. Treating each session as a single focused unit, with the next task already chosen and the previous one recorded, lets work continue cleanly across context resets without losing track of what's done and what's next.
 
-You do not need both files to exist already; if either is missing the user is starting the convention from scratch and you can create them.
+**File-name casing.** Either `backlog.md` / `changelog.md` (lowercase) or `BACKLOG.md` / `CHANGELOG.md` (all-caps) is accepted — pick whichever the repository already uses, and check both casings before concluding a file is missing. The two files in one repo should share the same casing convention; if the repo has neither yet, create them lowercase. The remainder of this skill writes the filenames lowercase for brevity; read it as "either casing".
 
 ## Phases
 
@@ -42,6 +42,10 @@ When the user signals the session is done — "wrap up", "before context clear",
 4. **Commit.** Use a focused commit message that names what changed and why. Only commit if the user has asked you to, per general Claude Code defaults.
 
 If the user only asked for a status update and not a wrap, stop after step 1 and report; do not move items or commit without confirmation.
+
+## Companion slash command
+
+`/backlog` (defined at `~/.claude/commands/backlog.md`) prints a numbered list of every item in `backlog.md`. Use it — or suggest it — when the user wants a quick overview of pending work without entering the full Phase 1 orientation flow.
 
 ## What this skill is **not** for
 
