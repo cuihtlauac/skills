@@ -43,9 +43,11 @@ When the user signals the session is done — "wrap up", "before context clear",
 
 If the user only asked for a status update and not a wrap, stop after step 1 and report; do not move items or commit without confirmation.
 
-## Companion slash command
+## Companion slash commands
 
-`/backlog` (defined at `~/.claude/commands/backlog.md`) prints a numbered list of every item in `backlog.md`. Use it — or suggest it — when the user wants a quick overview of pending work without entering the full Phase 1 orientation flow.
+- `/backlog` (`~/.claude/commands/backlog.md`) prints a numbered list of every item in `backlog.md`. Use it — or suggest it — when the user wants a quick overview of pending work without entering the full Phase 1 orientation flow.
+- `/handoff` (`~/.claude/commands/handoff.md`) runs **Phase 3 (Wrap)** as the pre-`/clear` handoff: verify the build, move the finished item from `backlog.md` to the top of `changelog.md`, and commit. Suggest it when the user is about to clear context.
+- `/pickup` (`~/.claude/commands/pickup.md`) runs **Phase 1 (Start / orient)** as the post-`/clear` counterpart: read both files, report the current task and what last shipped, then wait for confirmation. The natural sequence around a context reset is `/handoff` → `/clear` → `/pickup`.
 
 ## What this skill is **not** for
 
