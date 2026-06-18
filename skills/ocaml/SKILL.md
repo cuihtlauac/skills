@@ -29,6 +29,56 @@ The same form applies to any tool installed via opam (`utop`, `ocamlformat`, `me
 
 If you genuinely need several commands in the same environment (e.g. a sequence in one bash invocation), still prefer `opam exec -- bash -c '<cmd1> && <cmd2>'` over `eval`.
 
+## FFI performance: do not port the Python kernel pattern
+
+When binding OCaml to a native library, the dominant way Python reaches native
+speed is an **anti-pattern in OCaml**. Recognise it and refuse it.
+
+The Python pattern: make the high-level language fast by shipping a **closed
+catalogue of precompiled C kernels selected from the high-level side** — NumPy
+ufuncs, pandas `agg`, torch ops. A Python-level loop or lambda stays at
+interpreter speed; you reach C speed only by routing through the kernel
+catalogue. "Vectorise it" *means* "use the kernels."
+
+Why it is idiomatic in Python but wrong in OCaml:
+
+- Python needs it because the **CPython interpreter loop is slow**, so any hot
+  loop *must* escape to C. OCaml is natively compiled and already close to C;
+  the only residual cost over an FFI is the **boundary itself** (per-element
+  `caml_callback` + marshalling / tag-untag), **not** the loop. The correct fix
+  is to eliminate the *boundary crossing*, not to reimplement the *loop* in C.
+- A closed per-operation C kernel is **not user-extensible**: it makes the
+  *library* fast at a fixed operation set while leaving *user* code (any novel
+  computation) at callback speed. The user must edit and rebuild the binding in
+  C to go fast — the opposite of what an OCaml binding is for.
+- In a benchmark it is **circular**: a hand-written C kernel reaching C speed
+  measures C, not the binding. (A real failure: per-query C kernels reintroduced
+  under the name "fused stubs" and timed as the result — see the blocksci-ocaml
+  project memory.)
+
+The OCaml way instead:
+
+- Expose `[@@noalloc]` scalar accessors and let the user write their computation
+  with ordinary `fold`/`iter`/`map` combinators — *their* OCaml, compiled to
+  native, is the fast path.
+- Close the residual boundary cost with **compiler/inlining** techniques: gated
+  FFI-boundary fusion, flambda2, OxCaml unboxed externals — i.e. make the user's
+  own code compile better, not ship a kernel catalogue. Gated FFI-boundary
+  fusion is the **`ffi-inline` skill**: a *client-side* post-processing phase
+  that emits gated, tested portable assembly (LLVM IR) at the call site — it
+  tweaks the client's own assembly and **never** bakes a kernel into the API.
+  Its shipped artifact is always the gated object, never a hand-written native
+  kernel (that substitution is this same anti-pattern; `ffi-inline` declines
+  such sites).
+- If a closed-kernel number is ever shown, it is a separate, clearly-labelled
+  *ceiling*, never the user-facing figure.
+
+Heuristic: if a proposed "fast path" is *a C reimplementation of a specific
+operation, selected from OCaml*, it is this anti-pattern — regardless of what it
+is called. The pull toward it is strong because it is the most-attested "fast
+high-level language" idiom in training data; that does not make it right for
+OCaml.
+
 ## Looking up package and module docs
 
 The `mcp__ocaml-docs__*` MCP tools are the preferred way to resolve OCaml documentation questions, in this order of usefulness:
