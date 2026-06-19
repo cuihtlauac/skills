@@ -1,6 +1,6 @@
 ---
 name: lab-notebook
-description: Record results from benchmarks, parametric sweeps, or other empirical experiments into an append-only lab notebook (typically `lab/results/` plus a `lab/notebook.md` index). Use when the user has run a sweep or experiment driver and wants to capture the findings, when they ask to "record this run", "log a result", "add to the notebook", or when they discuss whether a particular run is worth keeping. Enforces the rules that results files are never overwritten, that re-runs producing consistent findings are discarded rather than logged, and that the human — not the model — decides what is worth recording.
+description: Record results from benchmarks, parametric sweeps, or other empirical experiments into an append-only lab notebook (typically `lab/results/` plus a `lab/notebook.md` index). Use when the user has run a sweep or experiment driver and wants to capture the findings, when they ask to "record this run", "log a result", "add to the notebook", or when they discuss whether a particular run is worth keeping. Enforces the rules that results files are never overwritten, that redundant deterministic re-runs are discarded rather than logged (while replications of stochastic experiments are kept as data), and that the human — not the model — decides what is worth recording.
 ---
 
 # Lab notebook discipline
@@ -47,6 +47,14 @@ Not every run is worth recording. A re-run that produces results consistent with
 
 If the user asks you to "save this" but the output looks like a confirmation of an existing entry, gently flag this before writing — they may have forgotten the prior result, or they may genuinely want the second data point. Either is fine; the point is to be honest about what the file represents.
 
+**Exception — stochastic experiments.** The "discard confirming re-runs" rule above assumes a *deterministic* measurement: a benchmark whose number is fixed given the inputs, where a second identical run is genuinely redundant. When the outcome is **sampled** — LLM completions, Monte-Carlo runs, anything with run-to-run variance — repeated runs are not redundant; they *are* the data. Replication is what quantifies variance and establishes that an effect is real rather than a lucky draw. For these experiments:
+
+- Record repeated runs (or additional seeds/batches) as further data points rather than discarding them; a "confirmation" here is signal worth keeping, not noise.
+- Report the outcome as a **distribution with an interval** (confidence interval, error bars, or a spread across seeds), never a single value, and record the **sample size** and **seed(s)**.
+- Treat a result that *fails* to replicate as one of the most important things to record, not a run to quietly drop.
+
+When in doubt about whether a measurement is deterministic, ask — the decision changes whether a re-run is clutter or data.
+
 ### 4. `notebook.md` is an index, not a memory
 
 `lab/notebook.md` contains one line per recorded experiment — a date, a one-line description, and a link to the corresponding `results/` file. It is *not* where analysis lives. All raw data, parameters, plots, and prose belong in the per-experiment file. When you add a recorded experiment, you add one row to the index and one new file to `results/`.
@@ -62,7 +70,7 @@ Follow this procedure:
 3. **Structure the file.** A useful results file answers five questions, roughly in this order:
    - **What** — one-paragraph summary of the experiment.
    - **Why** — motivation. What question did this run answer, what prior experiment does it build on, what was at stake? This is the most load-bearing section: a year from now, raw numbers without motivation are unreadable.
-   - **Provenance** — git commit, machine, kernel, who ran it, exact command line, duration, exit status. Anything needed to reproduce.
+   - **Provenance** — git commit, machine, kernel, toolchain (compiler + exact version + optimisation mode — e.g. OCaml 5.2.1 stock vs flambda, the C/C++ compiler, key build flags), who ran it, exact command line, duration, exit status. Anything needed to reproduce — for performance experiments the compiler and its optimisation mode are first-order determinants of the numbers, so never omit them.
    - **Parameters and raw data** — every input that varied (config values, seeds, sweep ranges) and the resulting numbers. Tables or blocks the user can re-parse. Don't summarise away the data. (Some projects collapse parameters into provenance; that's fine.)
    - **Analysis and open questions** — what the data means, what was surprising, what changed in your understanding, and what this run could not settle (optionally with a pointer to the backlog item that will follow up). Be honest about uncertainty.
 
