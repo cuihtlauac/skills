@@ -1,6 +1,6 @@
 ---
 name: ocaml
-description: Use when running, building, or testing OCaml code, or invoking any opam/dune command. Enforces the rule that `opam exec -- <cmd>` is the only acceptable way to enter the opam environment — `eval $(opam env) && <cmd>` is forbidden because it mutates the surrounding shell. Also the home for OCaml conventions as they accrete (build, test, formatting, package and module documentation lookup).
+description: Use when running, building, or testing OCaml code, or invoking any opam/dune command. Enforces the rule that `opam exec -- <cmd>` is the only acceptable way to enter the opam environment — `eval $(opam env) && <cmd>` is forbidden because it mutates the surrounding shell. Also the home for OCaml conventions as they accrete (build, test, formatting, package and module documentation lookup) and for opam know-how — switches (global vs local), pins, repos, dependency bounds and conflicts, constraint solving, dev/test deps, the dune relationship, and update vs upgrade (see opam.md).
 ---
 
 # OCaml conventions
@@ -28,6 +28,27 @@ The same form applies to any tool installed via opam (`utop`, `ocamlformat`, `me
 - The two are equivalent in effect for the one command you want to run; the difference is purely about scope.
 
 If you genuinely need several commands in the same environment (e.g. a sequence in one bash invocation), still prefer `opam exec -- bash -c '<cmd1> && <cmd2>'` over `eval`.
+
+## Working with opam
+
+opam's state model is the thing agents get wrong, because it differs from
+npm/cargo/pip. Keep three rules in mind:
+
+1. **The active switch is global state — not implied by the directory.** "What
+   is installed" depends on the active switch (selected by env vars), not on the
+   project you are in. Check it with `opam switch show` before reasoning about a
+   build. An `_opam/` directory in the project means a local switch is in play.
+2. **`command not found` / wrong-version errors are usually the environment, not
+   a missing package** — run the command through `opam exec --` rather than
+   reinstalling.
+3. **Switch-mutating commands (`install`, `pin`, `upgrade`, `switch create`,
+   `repository add`, `update`) touch user-owned state — ask first.** Inspecting
+   is always fine.
+
+For the full operational reference — global vs local switches, constraint
+solving, conflicts and version bounds, interface compatibility, repos, pins, dev
+and test dependencies, the dune relationship, and the update-vs-upgrade
+distinction — see [`opam.md`](opam.md) in this skill directory.
 
 ## FFI performance: do not port the Python kernel pattern
 
@@ -77,6 +98,36 @@ operation, selected from OCaml*, it is this anti-pattern — regardless of what 
 is called. The pull toward it is strong because it is the most-attested "fast
 high-level language" idiom in training data; that does not make it right for
 OCaml.
+
+## `Obj.magic`: if you think you need it, you're probably wrong
+
+`Obj.magic` (and the rest of `Obj`) bypasses the type system: it can silently
+produce the wrong runtime representation, and the failure surfaces far away as a
+segfault or corrupted read, not a type error. Treat reaching for it as a signal
+that the design is off, not as a tool in the normal kit.
+
+- **Default to "no".** Before writing `Obj.magic`, find the typed construct that
+  does the job. The standard library almost always already has it. The rule of
+  thumb from the OCaml community: every `Obj.magic` needs a *theorem* that it is
+  safe — if you cannot state that theorem precisely, you do not get to write it.
+- **Do not describe `Obj.magic` as "common" or "idiomatic."** It is the opposite:
+  a documented anti-pattern. If you catch yourself justifying one that way, stop
+  and verify against the stdlib source — it will show you the typed alternative.
+- **The classic trap — seeding an array with a dummy.** `Array.make n (Obj.magic
+  0)` to build a polymorphic array "you'll fill in later" is *wrong*, not merely
+  ugly: `Array.make` fixes the array's runtime layout from its seed, so an
+  immediate `0` forces the generic boxed layout even when the element type is
+  `float`, yielding a `float array` with tag `0` instead of `Double_array_tag`
+  (254). Reads corrupt once it is consumed monomorphically (and flambda can trip
+  on the discrepancy). The stdlib never does this — `Array.init`, `Array.of_list`,
+  and `Array.fold_left_map` all seed `create`/`make` with the **first real
+  element** (`create l (f 0)`, `create len hd`). Do the same: compute the first
+  element and seed with it, or use `Array.init`.
+- **The handful of legitimate uses are low-level and proven.** The stdlib's only
+  `Obj.magic`+array uses live in `camlinternalOO.ml` (object-system runtime
+  plumbing with a carefully-reasoned invariant). That is the bar: internal,
+  performance-critical, and accompanied by a real correctness argument — not
+  "the types are getting in my way."
 
 ## Looking up package and module docs
 
