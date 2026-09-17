@@ -73,8 +73,9 @@ Why it is idiomatic in Python but wrong in OCaml:
   computation) at callback speed. The user must edit and rebuild the binding in
   C to go fast — the opposite of what an OCaml binding is for.
 - In a benchmark it is **circular**: a hand-written C kernel reaching C speed
-  measures C, not the binding. (A real failure: per-query C kernels reintroduced
-  under the name "fused stubs" and timed as the result.)
+  measures C, not the binding. (This has bitten real projects: per-query C
+  kernels quietly reintroduced under the name "fused stubs" and then timed as if
+  they were the binding's result.)
 
 The OCaml way instead:
 
