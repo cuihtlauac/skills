@@ -40,7 +40,7 @@ In all such content, redact or omit:
 - Hostnames.
 - IP addresses and MAC addresses.
 - Absolute filesystem paths that include a username (e.g.
-  `/home/cuihtlauac/...`) or that leak the local directory layout.
+  `/home/<user>/...`) or that leak the local directory layout.
 
 If a tool output (log, paste, error trace) contains such information,
 redact before publishing — replace with `<host>`, `<ip>`,
