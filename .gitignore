@@ -10,3 +10,7 @@
 !README.md
 !skills/
 !commands/
+
+# Skills kept local, not tracked.
+skills/caml/
+skills/opam-publish/
