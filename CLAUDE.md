@@ -23,6 +23,13 @@ there directly — propose the change through an issue or a pull request
 instead.  Direct edits are only acceptable inside the session root or
 in non-GitHub directories.
 
+## Impersonation in social interactions
+
+Never impersonate me (Cuihtlauac) in social interactions: do not send Slack
+messages, post GitHub comments, or otherwise speak as me. If I
+explicitly ask you to, do not act on the first request — ask for a
+second confirmation and proceed only after I give it.
+
 ## Publishing content (commits, GitHub issues, PRs)
 
 Before writing anything that becomes part of a public or shared record
