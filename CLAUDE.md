@@ -23,12 +23,20 @@ there directly — propose the change through an issue or a pull request
 instead.  Direct edits are only acceptable inside the session root or
 in non-GitHub directories.
 
-## Impersonation in social interactions
+## Impersonation in person-to-person communication
 
-Never impersonate me (Cuihtlauac) in social interactions: do not send Slack
-messages, post GitHub comments, or otherwise speak as me. If I
-explicitly ask you to, do not act on the first request — ask for a
-second confirmation and proceed only after I give it.
+This rule is about one-to-one or one-to-few communication: a message
+addressed to a real person (or a small group) who will read it as
+coming from me. It is deceitful to let a robot answer a person as if it
+were me. It does NOT cover public or broadcast content (PRs, issues,
+blog posts, and the like), which is governed by the `redact-publish`
+rule below.
+
+Never impersonate me (Cuihtlauac) in such person-to-person
+communication: do not send direct Slack messages, reply to someone in a
+thread, or otherwise speak as me to an individual. If I explicitly ask
+you to, do not act on the first request — ask for a second confirmation
+and proceed only after I give it.
 
 ## Publishing content (commits, GitHub issues, PRs)
 
