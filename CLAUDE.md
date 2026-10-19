@@ -9,6 +9,11 @@ file (JS-rendered content, bot blocking, etc.), fall back to
     google-chrome --headless --disable-gpu --dump-dom <url>            # rendered HTML
     google-chrome --headless --disable-gpu --print-to-pdf=out.pdf <url>  # save as PDF
 
+## Clipboard
+
+When proposing text for me to copy to the clipboard, display it as
+usual, but also pipe it to `wl-copy` and tell me you have done so.
+
 ## OCaml
 
 For build commands, conventions, and package-doc lookup, see the `ocaml` skill.
