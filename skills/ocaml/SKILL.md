@@ -1,6 +1,6 @@
 ---
 name: ocaml
-description: Use when running, building, or testing OCaml code, or invoking any opam/dune command. Enforces the rule that `opam exec -- <cmd>` is the only acceptable way to enter the opam environment — `eval $(opam env) && <cmd>` is forbidden because it mutates the surrounding shell. Also the home for OCaml conventions as they accrete (build, test, formatting, package and module documentation lookup) and for opam know-how — switches (global vs local), pins, repos, dependency bounds and conflicts, constraint solving, dev/test deps, the dune relationship, and update vs upgrade (see opam.md).
+description: Use when running, building, or testing OCaml code, or invoking any opam/dune command. Enforces the rule that `opam exec -- <cmd>` is the only acceptable way to enter the opam environment — `eval $(opam env) && <cmd>` is forbidden because it mutates the surrounding shell. Also the home for OCaml conventions as they accrete (build, test, formatting, package and module documentation lookup) and for opam know-how — switches (global vs local), pins, repos, dependency bounds and conflicts, constraint solving, dev/test deps, the dune relationship, and update vs upgrade (see opam.md). Also covers reviewing OCaml diffs in VS Code with hover types on both sides (see review-diff.md).
 ---
 
 # OCaml conventions
@@ -129,6 +129,14 @@ that the design is off, not as a tool in the normal kit.
   plumbing with a carefully-reasoned invariant). That is the bar: internal,
   performance-critical, and accompanied by a real correctness argument — not
   "the types are getting in my way."
+
+## Reviewing changes with type information
+
+To read a diff of OCaml code in VS Code with hover types on both sides, check the
+base revision out with `git worktree`, build it, and compare the two files with
+`code --diff`. Commit diffs from VS Code's Graph, Timeline or PR views get no
+tooltips. See [`review-diff.md`](review-diff.md) for the steps, prerequisites and
+cleanup.
 
 ## Looking up package and module docs
 
