@@ -17,6 +17,12 @@ projects.
 - `skills/session-backlog/` — pattern for organizing work across
   Claude Code sessions via `backlog.md` (pending) and `changelog.md`
   (done). Three phases: start, mid-session, wrap.
+- `skills/ingest-document/` — turn a new source document (PDF, slide
+  deck, Word file, spreadsheet) into page-anchored text, a vision
+  transcription of slides and figures (Gantt charts as tables), and
+  cited facts whose quotes are machine-checked against the PDF text
+  layer. Local-only, for confidential dossiers. Ships three checkers:
+  low-text page triage, transcript coverage, quote verification.
 
 ## Layout
 
