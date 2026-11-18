@@ -23,6 +23,12 @@ projects.
   cited facts whose quotes are machine-checked against the PDF text
   layer. Local-only, for confidential dossiers. Ships three checkers:
   low-text page triage, transcript coverage, quote verification.
+- `skills/ingest-repo/` — the same for a git repository: pin it at a
+  commit, inventory it (with a triage of generated and vendored files),
+  compute contributor statistics (activity, areas, bus factor), map its
+  architecture, and extract facts cited to `<slug>@<commit>:<path>#L<a>-<b>`
+  whose quotes are machine-checked against git. Shares the registry and
+  facts tree with `ingest-document`.
 
 ## Layout
 
